@@ -3,11 +3,11 @@
 
 //pin layout
 const uint16_t  d4 = 6, d5 = 5, d6 = 4, d7 = 3;
-const uint16_t btnUP = 7, btnDWN = 8;
+const uint16_t btn_temp_UP = 7, btn_temp_DWN = 8;
 const uint16_t cold_valve = 9, warm_valve=10;
 const uint16_t rs = 12, en = 11;
-const uint16_t flow_up_btn = A1;
-const uint16_t flow_dn_btn = A2;
+const uint16_t btn_flow_up = A1;
+const uint16_t btn_flow_dn = A2;
 
 
 
@@ -22,9 +22,9 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 bool btnUPclicked = false;
 bool btnDWNclicked = false;
 
-float wantedTemp = 40.0;
+float wantedTemp = 38;
 float currentTemp = 38;
-float p = 1;//value to correct of error in p feedback
+float p_correction = 1;//value to correct of error in p feedback
 double waterflow = 0;// goes from 0-1
 
 
@@ -41,8 +41,8 @@ void p_feedback(int T,double waterflow);
 
 void setup() {
 	Serial.begin(9600);
-	pinMode(btnUP, INPUT_PULLUP);
-	pinMode(btnDWN, INPUT_PULLUP);
+	pinMode(btn_temp_UP, INPUT_PULLUP);
+	pinMode(btn_temp_DWN, INPUT_PULLUP);
 
 	lcd.begin(16, 2);
 
@@ -66,9 +66,14 @@ void loop() {
 
 
 
-void p_feedback(int T)
-{
-
+void p_feedback(int T,double flow)
+{//in_progress
+	int cold_angle = cold_servo.read();
+	int warm_angle = warm_servo.read();
+	if (warm_angle < 180)
+	{
+		warm_angle+=p_correction
+	}
 }
 
 void printWntTmp() {
@@ -87,8 +92,8 @@ void printCrntTmp() {
 	lcd.print(')');
 }
 
-void checkButtons() {
-	if (digitalRead(btnUP) == LOW) {
+void checkButtons() {//todo:add check for flow buttons
+	if (digitalRead(btn_temp_UP) == LOW) {
 		if (!btnUPclicked) { //clicked
 			wantedTemp++;
 			printWntTmp();
@@ -100,7 +105,7 @@ void checkButtons() {
 	else btnUPclicked = false;
 
 
-	if (digitalRead(btnDWN) == LOW) {
+	if (digitalRead(btn_temp_DWN) == LOW) {
 		if (!btnDWNclicked) { //clicked
 			wantedTemp--;
 			printWntTmp();
