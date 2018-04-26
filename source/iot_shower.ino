@@ -1,12 +1,15 @@
 #include <LiquidCrystal.h>
 #include <Servo.h>
 
+//pin layout
+const uint16_t  d4 = 6, d5 = 5, d6 = 4, d7 = 3;
+const uint16_t btnUP = 7, btnDWN = 8;
+const uint16_t cold_valve = 9, warm_valve=10;
+const uint16_t rs = 12, en = 11;
+const uint16_t flow_up_btn = A1;
+const uint16_t flow_dn_btn = A2;
 
-const int  d4 = 6, d5 = 5, d6 = 4, d7 = 3;
-const int btnUP = 7, btnDWN = 8;
-#define cold_valve 9
-#define warm_valve 10
-const int rs = 12, en = 11;
+
 
 Servo cold_servo;
 Servo warm_servo;
@@ -21,8 +24,8 @@ bool btnDWNclicked = false;
 
 float wantedTemp = 40.0;
 float currentTemp = 38;
-
-
+float p = 1;//value to correct of error in p feedback
+double waterflow = 0;// goes from 0-1
 
 
 
@@ -33,14 +36,13 @@ void checkButtons();
 float measureTemp();//todo
 void printWntTmp();
 void printCrntTmp();
-
+void p_feedback(int T,double waterflow);
 
 
 void setup() {
 	Serial.begin(9600);
 	pinMode(btnUP, INPUT_PULLUP);
 	pinMode(btnDWN, INPUT_PULLUP);
-
 
 	lcd.begin(16, 2);
 
@@ -63,6 +65,11 @@ void loop() {
 }
 
 
+
+void p_feedback(int T)
+{
+
+}
 
 void printWntTmp() {
 	lcd.setCursor(0, 0);
